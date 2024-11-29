@@ -1,6 +1,7 @@
-.direnv/
+# Virtual Environment
+.env/
+# Model Related
 result
-
 data/train/
-
+# Cache
 __pycache__/
