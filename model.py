@@ -24,6 +24,7 @@ class Model0:
     return x
 
 # Model1
+# 3 -> 16 -> 32 -> 64 -> 128
 class Model1:
   def __init__(self):
     self.c1 = nn.Conv2d()
@@ -53,5 +54,59 @@ class Model1:
     x = self.l1(x)
     return x
 
-
 # Model2
+
+# Batch normalization is a great tool for regularization, and can single handedly increase the model accuracy by
+# a huge margin. However it's introducing a new layer, so might slow down training.
+# 3 -> (o1) 16 -> (o2) 32 -> (o3) 64 -> (o4) 128 (kernel_size=3)
+# Apply nn.BatchNorm2d(output)
+class Model2:
+  def __init__(self):
+    self.c1 = nn.Conv2d()
+    self.c2 = nn.Conv2d()
+    self.c3 = nn.Conv2d()
+    self.c4 = nn.Conv2d()
+  
+  def __call__(self, x) -> Tensor:
+    x = preprocess(x)
+
+    x = x.avg_pool2d(2)
+    x = self.c1(x)
+    x = x.gelu()
+
+    x = x.avg_pool2d(2)
+    x = self.c2(x)
+    x = x.gelu()
+
+    x = x.avg_pool2d(2)
+    x = self.c3(x)
+    x = x.gelu()
+
+    x = x.avg_pool2d(2)
+    x = self.c4(x)
+    x = x.gelu()
+
+    x = self.l1(x)
+    return x
+
+# The ideal batch size is as large as you can go without the computer shitting itself. 
+# Since the model trains one batch each step, larger batch means your model will see more examples in total.
+# the idea is simple: total examples trained = batch_size * n_steps
+
+# Information Theory: Studies how to persist and manipulate information. How does information maintain?
+# What causes loss of information? For example, the reason why we increase the number of filters in each
+# layer of convolution is to prevent information loss; the information accumulated from the previous layer
+# can be channeled usefully, thus increasing # filters each convolution layer prevents loss of information
+# due to reduced dimensions.
+
+# Rectified Linear Unit is great for maximizing features, however it has one issue. Driving all the negative
+# weights to 0 causes loss of information, and in practice could give us a useless layer if most of its weights
+# are negative. To prevent this, there's another activation function called 'gelu' which stands for 'Gaussian
+# Error Linear Unit'.
+
+# Backprop: Instead of using chain rules to derive how to error cost function is going to reduce, we can 
+# project a value and skip in-between steps. This is especially handy when you have to deal with 
+# non-differentiable error cost functions.
+
+# At Mac RoboMaster we're going to use regressions models for computer vision since we care about detecting
+# the center of the armor plate instead of seeing if it is in the frame or not.
