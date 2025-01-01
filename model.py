@@ -58,32 +58,35 @@ class Model1:
 
 # Batch normalization is a great tool for regularization, and can single handedly increase the model accuracy by
 # a huge margin. However it's introducing a new layer, so might slow down training.
-# 3 -> (o1) 16 -> (o2) 32 -> (o3) 64 -> (o4) 128 (kernel_size=3)
-# Apply nn.BatchNorm2d(output)
 class Model2:
   def __init__(self):
-    self.c1 = nn.Conv2d()
-    self.c2 = nn.Conv2d()
-    self.c3 = nn.Conv2d()
-    self.c4 = nn.Conv2d()
+    self.c1 = nn.Conv2d(3, 16, kernel_size=3)
+    self.n1 = nn.BatchNorm2d(16)
+    self.c2 = nn.Conv2d(16, 32, kernel_size=3)
+    self.n2 = nn.BatchNorm2d(32)
+    self.c3 = nn.Conv2d(32, 64, kernel_size=3)
+    self.n3 = nn.BatchNorm2d(64)
+    self.c4 = nn.Conv2d(64, 128, kernel_size=3)
+    self.n4 = nn.BatchNorm2d(128)
+    self.l1 = nn.Linear(128,2)
   
   def __call__(self, x) -> Tensor:
     x = preprocess(x)
 
     x = x.avg_pool2d(2)
-    x = self.c1(x)
+    x = self.n1(self.c1(x))
     x = x.gelu()
 
     x = x.avg_pool2d(2)
-    x = self.c2(x)
+    x = self.n2(self.c2(x))
     x = x.gelu()
 
     x = x.avg_pool2d(2)
-    x = self.c3(x)
+    x = self.n3(self.c3(x))
     x = x.gelu()
 
     x = x.avg_pool2d(2)
-    x = self.c4(x)
+    x = self.n4(self.c4(x))
     x = x.gelu()
 
     x = self.l1(x)
