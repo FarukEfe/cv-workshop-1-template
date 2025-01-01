@@ -65,7 +65,7 @@ if __name__ == "__main__":
   # create model
   # model = Model0()
   # model = Model1()
-  model = Model2()
+  model = Model1()
 
   # create optimizer
   optim = AdamW(get_parameters(model), lr=LR)

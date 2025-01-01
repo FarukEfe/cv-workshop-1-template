@@ -27,10 +27,11 @@ class Model0:
 # 3 -> 16 -> 32 -> 64 -> 128
 class Model1:
   def __init__(self):
-    self.c1 = nn.Conv2d()
-    self.c2 = nn.Conv2d()
-    self.c3 = nn.Conv2d()
-    self.c4 = nn.Conv2d()
+    self.c1 = nn.Conv2d(3, 16, kernel_size=3)
+    self.c2 = nn.Conv2d(16, 32, kernel_size=3)
+    self.c3 = nn.Conv2d(32, 64, kernel_size=3)
+    self.c4 = nn.Conv2d(64, 128, kernel_size=3)
+    self.l1 = nn.Linear(128,2)
   
   def __call__(self, x) -> Tensor:
     x = preprocess(x)
@@ -49,7 +50,7 @@ class Model1:
 
     x = x.avg_pool2d(2)
     x = self.c4(x)
-    x = x.gelu()
+    x = x.mean([2, 3])
 
     x = self.l1(x)
     return x
@@ -87,7 +88,7 @@ class Model2:
 
     x = x.avg_pool2d(2)
     x = self.n4(self.c4(x))
-    x = x.gelu()
+    x = x.mean([2, 3]) # What do we exactly do at this step?
 
     x = self.l1(x)
     return x
